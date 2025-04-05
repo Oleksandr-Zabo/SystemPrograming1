@@ -5,8 +5,13 @@ class Program
 {
     static void Main()
     {
-        Console.WriteLine("Enter time for update in seconds:");
-        double time = Convert.ToDouble(Console.ReadLine());
+        double time;
+        do
+        {
+            Console.WriteLine("Enter time for update in seconds:");
+            time = Convert.ToDouble(Console.ReadLine());
+        } while (time > 0 && time < 10);
+        
         int timeMilisecond = (int)(time * 1000);
 
         while (true)
@@ -19,20 +24,10 @@ class Program
 
     static void Sleep(int time)
     {
-        int timeWait = 2000;
-        if (time > timeWait)
-        {
-            Thread.Sleep(time - timeWait);
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Refreshing process list...");
-            Console.ResetColor();
-            Thread.Sleep(timeWait);
-        }
-        else
-        {
-            Thread.Sleep(time);
-        }
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Refreshing process list...");
+        Thread.Sleep(time);
     }
 
     static void GetProcesses()
@@ -65,7 +60,23 @@ class Program
         else
         {
             Console.Clear();
-            Console.WriteLine("Refreshing process list...");
+        }
+    }
+
+    static void TerminateProcess(Process process)
+    {
+        try
+        {
+            process.Kill();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("Process terminated successfully.");
+            Console.ResetColor();
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Error terminating process: {ex.Message}");
+            Console.ResetColor();
         }
     }
 
@@ -95,8 +106,17 @@ class Program
 
         int count = Process.GetProcessesByName(process.ProcessName).Length;
         Console.WriteLine($"Number of Instances: {count}");
+
+        Console.WriteLine("\nDo you want to terminate this process? (yes/no)");
+        string terminate = Console.ReadLine();
+        if (terminate?.ToLower() == "yes")
+        {
+            TerminateProcess(process);
+        }
+
         Console.WriteLine("\nPress Enter to return to the main list...");
         Console.ReadLine();
     }
+
 }
 
